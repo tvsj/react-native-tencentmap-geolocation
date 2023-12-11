@@ -5,13 +5,13 @@
 ## 安装
 
 ```sh
-npm install react-native-tencentmap-geolocation
+npm install @charer/react-native-tencentmap-geolocation
 ```
 
 ## Usage
 
 ```js
-import { addLocationListener,removeLocationListener,setRequestLevel,stop,requestSingleLocation } from 'react-native-tencentmap-geolocation';
+import { addLocationListener,removeLocationListener,setRequestLevel,stop,requestSingleLocation } from '@charer/react-native-tencentmap-geolocation';
 
 
 // 设置定位级别
