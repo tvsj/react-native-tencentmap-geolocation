@@ -1,10 +1,8 @@
 package charer.tmap.geolocation;
 
 
-
 import static com.facebook.imagepipeline.nativecode.NativeJpegTranscoder.TAG;
 
-import android.content.Context;
 import android.os.Looper;
 import android.util.Log;
 
@@ -15,18 +13,20 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.WritableNativeArray;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.tencent.map.geolocation.TencentLocation;
 import com.tencent.map.geolocation.TencentLocationListener;
 import com.tencent.map.geolocation.TencentLocationManager;
 import com.tencent.map.geolocation.TencentLocationRequest;
+import com.tencent.map.geolocation.TencentPoi;
 
-import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @SuppressWarnings("unused")
 public class TMapGeoLocationModule extends ReactContextBaseJavaModule implements TencentLocationListener {
@@ -108,24 +108,23 @@ public class TMapGeoLocationModule extends ReactContextBaseJavaModule implements
   //    请求单次定位
   @ReactMethod
   public void requestSingleLocation(boolean value) {
-    Log.d(TAG, "requestSingleLocation: 请求单次定位");
     mLocationManager.requestSingleFreshLocation(request, this, Looper.getMainLooper());
   }
 
   @ReactMethod
   public void setMockEnable(boolean value) {
-//        mLocationManager.setMockEnable(value);
+    mLocationManager.setMockEnable(value);
   }
 
 
   @ReactMethod
   public void setGpsFirst(boolean value) {
-//        request.setGpsFirst(value);
+    request.setGpsFirst(value);
   }
 
   @ReactMethod
   public void setLocMode(int value) {
-//    request.setLocMode(value);
+    request.setLocMode(value);
   }
 
 
@@ -157,21 +156,28 @@ public class TMapGeoLocationModule extends ReactContextBaseJavaModule implements
       map.putString("streetNo", location.getStreetNo());
     }
     if (requestLevel == TencentLocationRequest.REQUEST_LEVEL_POI) {
-      try {
+      List<TencentPoi> poilist = location.getPoiList();
 
-        JSONArray jsonArray = new JSONArray(location.getPoiList());
-        ArrayList<JSONObject> poiObjects = new ArrayList<>();
+      ArrayList<WritableMap> poiObjects = new ArrayList<>();
 
-        // 遍历 JSONArray，并将每个 JSONObject 添加到 ArrayList 中
-        for (int i = 0; i < jsonArray.length(); i++) {
-          poiObjects.add(jsonArray.getJSONObject(i));
-        }
-        // 使用 Arguments.fromArray() 将 ArrayList 转换为 ReadableArray
-        ReadableArray readableArray = Arguments.fromArray(poiObjects.toArray());
-        map.putArray("poiList", readableArray);
-      } catch (JSONException e) {
-        throw new RuntimeException(e);
+      for (int i = 0; i < poilist.size(); i++) {
+        WritableMap poi = Arguments.createMap();
+        poi.putString("name", poilist.get(i).getName());
+        poi.putString("address", poilist.get(i).getAddress());
+        poi.putString("name", poilist.get(i).getCatalog());
+        poi.putDouble("distance", poilist.get(i).getDistance());
+        poi.putString("direction", poilist.get(i).getDirection());
+        poi.putDouble("longitude", poilist.get(i).getLongitude());
+        poi.putDouble("latitude", poilist.get(i).getLatitude());
+        poi.putString("uid", poilist.get(i).getUid());
+        poiObjects.add(poi);
       }
+      WritableArray writableArray = new WritableNativeArray();
+
+      for (WritableMap poi : poiObjects) {
+        writableArray.pushMap(poi);
+      }
+      map.putArray("poiList", writableArray);
 
     }
 
