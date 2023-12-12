@@ -35,7 +35,7 @@
   "bugs": {
     "url": "https://github.com/tvsj/react-native-tencentmap-geolocation/issues"
   },
-  "homepage": "http://charer.info#readme",
+  "homepage": "https://github.com/tvsj",
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   },
