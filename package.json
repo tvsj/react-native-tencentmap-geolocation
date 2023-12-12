@@ -1,6 +1,6 @@
 {
   "name": "@charer/react-native-tencentmap-geolocation",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "腾讯地图定位react-native组件",
   "react-native": "src/index",
   "source": "src/index",
